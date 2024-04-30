@@ -7,7 +7,7 @@
  * it under the terms of the MIT license. See COPYING for details.
  *
  */
-
+ 
 #include "config.h"
 
 #include "strerror_override.h"
@@ -1462,6 +1462,7 @@ struct json_object *json_object_new_array(void)
 {
 	return json_object_new_array_ext(ARRAY_LIST_DEFAULT_SIZE);
 }
+// 创建一个新的 JSON 数组对象，并指定初始大小
 struct json_object *json_object_new_array_ext(int initial_size)
 {
 	struct json_object_array *jso = JSON_OBJECT_NEW(array);
@@ -1525,17 +1526,17 @@ int json_object_array_insert_idx(struct json_object *jso, size_t idx, struct jso
 	assert(json_object_get_type(jso) == json_type_array);
 	return array_list_insert_idx(JC_ARRAY(jso)->c_array, idx, val);
 }
-
+// 将指定对于插入到指定索引位置
 int json_object_array_put_idx(struct json_object *jso, size_t idx, struct json_object *val)
 {
-	assert(json_object_get_type(jso) == json_type_array);
-	return array_list_put_idx(JC_ARRAY(jso)->c_array, idx, val);
+	assert(json_object_get_type(jso) == json_type_array); //使用assert 确保是同一个类型的对象。
+	return array_list_put_idx(JC_ARRAY(jso)->c_array, idx, val); // 返回 0 = 成功 
 }
-
+//删除 JSON 数组对象中从指定索引位置开始的一定数量的元素(自定义函数)
 int json_object_array_del_idx(struct json_object *jso, size_t idx, size_t count)
 {
-	assert(json_object_get_type(jso) == json_type_array);
-	return array_list_del_idx(JC_ARRAY(jso)->c_array, idx, count);
+	assert(json_object_get_type(jso) == json_type_array); //使用assert 确保是同一个类型的对象。
+	return array_list_del_idx(JC_ARRAY(jso)->c_array, idx, count); //删除 JSON 数组对象中从索引位置 idx 开始的 count 个元素（并将后续元素向前移动以填补被删除元素）
 }
 
 struct json_object *json_object_array_get_idx(const struct json_object *jso, size_t idx)

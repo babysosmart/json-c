@@ -87,25 +87,26 @@ void test_array_del_idx(void)
 	int sflags = 0;
 #endif
 
-	my_array = make_array();
-	orig_array_len = json_object_array_length(my_array);
+	my_array = make_array(); //创建一个新的 JSON 数组对象，并返回该数组对象的指针(自定义函数)
+	orig_array_len = json_object_array_length(my_array); //获取 JSON 数组对象中元素的个数
+	printf("========== orig_array_len = %ld\n", orig_array_len);
 
-	printf("my_array=\n");
+	printf("111my_array=\n");
 	for (ii = 0; ii < json_object_array_length(my_array); ii++)
 	{
-		json_object *obj = json_object_array_get_idx(my_array, ii);
-		printf("\t[%d]=%s\n", (int)ii, json_object_to_json_string(obj));
+		json_object *obj = json_object_array_get_idx(my_array, ii); //获取 JSON 数组对象中指定索引位置的元素
+		printf("\t[%d]=%s\n", (int)ii, json_object_to_json_string(obj)); //转换为字符串
 	}
 	printf("my_array.to_string()=%s\n", json_object_to_json_string(my_array));
 
 	for (ii = 0; ii < orig_array_len; ii++)
 	{
-		rc = json_object_array_del_idx(my_array, 0, 1);
+		rc = json_object_array_del_idx(my_array, 0, 1); //删除 JSON 数组对象中从指定索引位置开始的一定数量的元素(自定义函数)
 		printf("after del_idx(0,1)=%d, my_array.to_string()=%s\n", rc,
 		       json_object_to_json_string(my_array));
 	}
 
-	/* One more time, with the empty array: */
+	/* One more time, with the empty array: 使用空数组 */
 	rc = json_object_array_del_idx(my_array, 0, 1);
 	printf("after del_idx(0,1)=%d, my_array.to_string()=%s\n", rc,
 	       json_object_to_json_string(my_array));
@@ -114,7 +115,7 @@ void test_array_del_idx(void)
 
 	/* Delete all array indexes at once */
 	my_array = make_array();
-	rc = json_object_array_del_idx(my_array, 0, orig_array_len);
+	rc = json_object_array_del_idx(my_array, 0, orig_array_len); //删除全部
 	printf("after del_idx(0,%d)=%d, my_array.to_string()=%s\n", (int)orig_array_len, rc,
 	       json_object_to_json_string(my_array));
 
@@ -122,7 +123,7 @@ void test_array_del_idx(void)
 
 	/* Delete *more* than all array indexes at once */
 	my_array = make_array();
-	rc = json_object_array_del_idx(my_array, 0, orig_array_len + 1);
+	rc = json_object_array_del_idx(my_array, 0, orig_array_len + 1); //删除超过长度的情况
 	printf("after del_idx(0,%d)=%d, my_array.to_string()=%s\n", (int)(orig_array_len + 1), rc,
 	       json_object_to_json_string(my_array));
 
@@ -130,7 +131,7 @@ void test_array_del_idx(void)
 
 	/* Delete some array indexes, then add more */
 	my_array = make_array();
-	rc = json_object_array_del_idx(my_array, 0, orig_array_len - 1);
+	rc = json_object_array_del_idx(my_array, 0, orig_array_len - 1); //删除 6个
 	printf("after del_idx(0,%d)=%d, my_array.to_string()=%s\n", (int)(orig_array_len - 1), rc,
 	       json_object_to_json_string(my_array));
 	json_object_array_add(my_array, json_object_new_string("s1"));
@@ -163,9 +164,9 @@ void test_array_list_expand_internal(void)
 	printf("my_array.to_string()=%s\n", json_object_to_json_string(my_array));
 
 	/* Put iNdex < array->size, no expand. */
-	rc = json_object_array_put_idx(my_array, 5, json_object_new_int(6));
+	rc = json_object_array_put_idx(my_array, 5, json_object_new_int(6));// 返回 0 = 成功
 	printf("put_idx(5,6)=%d\n", rc);
-
+	
 	/* array->size < Put Index < array->size * 2 <= SIZE_T_MAX, the size = array->size * 2. */
 	idx = ARRAY_LIST_DEFAULT_SIZE * 2 - 1;
 	rc = json_object_array_put_idx(my_array, idx, json_object_new_int(0));
@@ -192,23 +193,23 @@ void test_array_list_expand_internal(void)
 void test_array_insert_idx(void);
 void test_array_insert_idx(void)
 {
-	json_object *my_array;
-	struct json_object *jo1;
+	json_object *my_array; //JSON 对象
+	struct json_object *jo1; //JSON 对象指针 
 
-	my_array = json_object_new_array();
-	json_object_array_add(my_array, json_object_new_int(1));
+	my_array = json_object_new_array(); //数组对象
+	json_object_array_add(my_array, json_object_new_int(1)); // 向 JSON 数组中添加一个新的 JSON 整数对象
 	json_object_array_add(my_array, json_object_new_int(2));
 	json_object_array_add(my_array, json_object_new_int(5));
 
 	json_object_array_insert_idx(my_array, 2, json_object_new_int(4));
-	jo1 = json_tokener_parse("[1, 2, 4, 5]");
-	assert(1 == json_object_equal(my_array, jo1));
-	json_object_put(jo1);
+	jo1 = json_tokener_parse("[1, 2, 4, 5]"); //使用 JSON 解析器解析一个包含整数元素的 JSON 数组字符串，并将解析后的 JSON 对象赋值给指针 jo1
+	assert(1 == json_object_equal(my_array, jo1)); //进行断言比较，成功返回 1，不成功 程序终止并输出错误码
+	json_object_put(jo1); //释放内存
 
 	json_object_array_insert_idx(my_array, 2, json_object_new_int(3));
 
 	jo1 = json_tokener_parse("[1, 2, 3, 4, 5]");
-	assert(1 == json_object_equal(my_array, jo1));
+	assert(1 == json_object_equal(my_array, jo1)); //json_object_equal 函数用于比较两个 JSON 对象是否相等
 	json_object_put(jo1);
 
 	json_object_array_insert_idx(my_array, 5, json_object_new_int(6));
@@ -227,7 +228,7 @@ void test_array_insert_idx(void)
 
 int main(int argc, char **argv)
 {
-	json_object *my_string, *my_int, *my_null, *my_object, *my_array;
+	json_object *my_string, *my_int, *my_null, *my_object, *my_array; //声明5个 json_object 对象
 	size_t i;
 #ifdef TEST_FORMATTED
 	int sflags = 0;
@@ -239,13 +240,13 @@ int main(int argc, char **argv)
 	sflags = parse_flags(argc, argv);
 #endif
 
-	my_string = json_object_new_string("\t");
-	printf("my_string=%s\n", json_object_get_string(my_string));
-	printf("my_string.to_string()=%s\n", json_object_to_json_string(my_string));
-	json_object_put(my_string);
+	my_string = json_object_new_string("\t"); //创建 JSON 字符串 
+	printf("my_string=%s\n", json_object_get_string(my_string)); //返回 JSON 对象存储的字符串值
+	printf("my_string.to_string()=%s\n", json_object_to_json_string(my_string)); //将 JSON 对象转换为 JSON 格式的字符串表示形式
+	json_object_put(my_string);  //释放 JSON 对象所占用的内存，减少其引用计数(用于不在需要一个 JSON 对象时进行清理操作)
 
-	my_string = json_object_new_string("\\");
-	printf("my_string=%s\n", json_object_get_string(my_string));
+	my_string = json_object_new_string("\\");//创建 JSON 字符串 
+	printf("my_string=%s\n", json_object_get_string(my_string)); //返回 JSON 对象存储的字符串值
 	printf("my_string.to_string()=%s\n", json_object_to_json_string(my_string));
 	json_object_put(my_string);
 
@@ -253,7 +254,9 @@ int main(int argc, char **argv)
 	printf("my_string=%s\n", json_object_get_string(my_string));
 	printf("my_string.to_string()=%s\n", json_object_to_json_string(my_string));
 	printf("my_string.to_string(NOSLASHESCAPE)=%s\n",
-	       json_object_to_json_string_ext(my_string, JSON_C_TO_STRING_NOSLASHESCAPE));
+	       json_object_to_json_string_ext(my_string, JSON_C_TO_STRING_NOSLASHESCAPE)); //将 JSON 对象转换为 JSON 格式的字符串表示形式
+	//第一个参数 = 要转换为 JSON 字符串表示形式的 JSON 对象
+	//第二个参数 = 用于指定输出格式的标志，可以控制缩进、格式化等选项
 	json_object_put(my_string);
 
 	my_string = json_object_new_string("/foo/bar/baz");
@@ -267,22 +270,23 @@ int main(int argc, char **argv)
 	printf("my_string=%s\n", json_object_get_string(my_string));
 	printf("my_string.to_string()=%s\n", json_object_to_json_string(my_string));
 
-	my_int = json_object_new_int(9);
+	my_int = json_object_new_int(9); //创建一个新的 JSON 整数对象
 	printf("my_int=%d\n", json_object_get_int(my_int));
 	printf("my_int.to_string()=%s\n", json_object_to_json_string(my_int));
 
-	my_null = json_object_new_null();
+	my_null = json_object_new_null(); //创建一个新的 JSON 空值对象
 	printf("my_null.to_string()=%s\n", json_object_to_json_string(my_null));
 
-	my_array = json_object_new_array();
-	json_object_array_add(my_array, json_object_new_int(1));
+	my_array = json_object_new_array();  //创建一个新的 JSON 数组对象
+	json_object_array_add(my_array, json_object_new_int(1)); //向一个 JSON 数组对象，添加一个新的 JSON 整数对象
 	json_object_array_add(my_array, json_object_new_int(2));
 	json_object_array_add(my_array, json_object_new_int(3));
-	json_object_array_put_idx(my_array, 4, json_object_new_int(5));
+	json_object_array_put_idx(my_array, 4, json_object_new_int(5)); //将新的 JSON 整数对象 添加到 JSON 数组对象的指定索引位置
+	// 将 整数5的 JSON 对象 添加到 my_array 的 JSON 数组对象中的索引位置4，如果该位置已经有则替换，没有则插入新的元素。
 	printf("my_array=\n");
 	for (i = 0; i < json_object_array_length(my_array); i++)
 	{
-		json_object *obj = json_object_array_get_idx(my_array, i);
+		json_object *obj = json_object_array_get_idx(my_array, i); //获取 JSON 对象中的指定索引位置的元素
 		printf("\t[%d]=%s\n", (int)i, json_object_to_json_string(obj));
 	}
 	printf("my_array.to_string()=%s\n", json_object_to_json_string(my_array));
